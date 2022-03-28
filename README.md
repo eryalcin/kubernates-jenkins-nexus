@@ -26,10 +26,15 @@ Vagrant(https://www.vagrantup.com/) toolunu sanallaştırma ortamımızda kubern
 Bu projede sanallaştırma altyapısı için Vindows10 üzerinde VirtualBox tercih edilmiştir. 
 https://ugurakgul.medium.com/creating-a-local-kubernetes-cluster-with-vagrant-ba591ab70ee2 linkinden kurulumu yukarıdaki VirtualBox ve Vagrant versiyonları için değiştirip kendi ortamınıza kurulumu sağlayabilirsiniz.
 
+![image](https://user-images.githubusercontent.com/32457347/160400160-71f9e97a-b4f2-4da4-ae72-9dfde9befe19.png)
+
 # Ansible Kurulumu
 
 Ben bu çalışmayı kaynak eksikliğinden dolayı VirtualBox üzerinden devam ettiremedim. OpenStack ortamında Ubuntu18.04  sunucularında gerçekleştireceğim.
 Master node olacak VM'e ansible 2.10.15 kurulumu yapıyoruz.
+
+![image](https://user-images.githubusercontent.com/32457347/160401804-827e5f2a-ae4e-4d43-b017-c6d8af94a0e2.png)
+
 
 $ sudo apt update
 
@@ -47,6 +52,8 @@ https://topkaya.medium.com/sshla-%C5%9Fifre-girmeden-uzak-ba%C4%9Flant%C4%B1-kur
 
 Bu bölüm için https://mydevops353097059.wordpress.com/kubespray-tr/ adresinden kopyalanmıştır.
 
+![image](https://user-images.githubusercontent.com/32457347/160402048-9498ff5b-fd90-453b-ac78-f95f73dbfc3c.png)
+
 Bu bölümde  kubespray kullanarak 1 master ve 2 node’u olan kubernetes clusterı oluşturacağız. Ben bu çalışmayı kaynak eksikliğinden dolayı VirtualBox üzerinden devam ettiremedim. OpenStack ortamında Ubuntu18.04  sunucularında gerçekleştireceğim.
 
 # Kubespray Nedir?
@@ -55,7 +62,7 @@ Kubespray kendi sunucularımıza veya cloud sunucularına (aws gibi) ansible kul
 
 Cluster için Gerekli Uygulama Sunucuları
 
-3 adet 18.04(4vCPU-8GB_Ram-80GB_Disk) sunucusu (1 master+node 2 node)
+3 adet 18.04(4vCPU-8GB_Ram-80GB_Disk) sunucusu (1 master 2 node)
 
 # Kubespray Kurulumu
 
@@ -129,8 +136,6 @@ node2 ansible_host=10.10.10.13
 master
 
 [kube-node]
-
-master
 
 node1
 
