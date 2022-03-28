@@ -15,13 +15,13 @@ config.vm.provision "shell", inline: "echo Hello"
 
   # Every Vagrant development environment requires a box. You can search for
   # boxes at https://vagrantcloud.com/search.
-config.vm.define "vm-5" do |vm1|
+config.vm.define "master" do |master|
   config.vm.box = "generic/ubuntu2004"
 end
-config.vm.define "vm-2" do |vm2|
+config.vm.define "node1" do |node1|
   config.vm.box = "generic/ubuntu2004"
 end
-config.vm.define "vm-3" do |vm3|
+config.vm.define "node2" do |node2|
   config.vm.box = "generic/ubuntu2004"
 end
   # Disable automatic box update checking. If you disable this, then
