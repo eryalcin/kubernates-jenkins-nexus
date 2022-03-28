@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nexus
+  namespace: nexus-dev
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nexus-server
+  template:
+    metadata:
+      labels:
+        app: nexus-server
+    spec:
+      containers:
+      - image: sonatype/nexus3:latest
+        imagePullPolicy: Always
+        name: nexus
+        ports:
+          - name: http-port
+            containerPort: 8081
+          - name: jnlp-port
+            containerPort: 51000
+        securityContext:
+          allowPrivilegeEscalation: true
+          privileged: true
+          readOnlyRootFilesystem: false
+          runAsUser: 0
+        volumeMounts:
+          - name: nexus-volume
+            mountPath: "nexus-volume"
+      volumes:
+      - name: nexus-volume
+        persistentVolumeClaim:
+          claimName: nexus-pvc
