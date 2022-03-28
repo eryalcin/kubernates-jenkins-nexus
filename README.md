@@ -174,3 +174,9 @@ ansible-playbook -i inventory/mycluster/hosts.ini cluster.yml –private-key=k8s
 Yukarıdaki komut ile birlikte cluster oluşturma işlemi başlayacaktır. Bu işlem biraz uzun sürebilir.
 
 İşlem bittikten sonra clusterımız hazır olacaktır.
+
+# Kunernetes te Jenkins Ayaklandırma 
+Kurulum için için jenkins-deploy dosyasına bakınız 
+
+# Kunernetes te Nexus Ayaklandırma 
+Kurulum için için nexus-deploy dosyasına bakınız 
