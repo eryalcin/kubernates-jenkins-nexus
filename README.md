@@ -181,7 +181,7 @@ Yukarıdaki komut ile birlikte cluster oluşturma işlemi başlayacaktır. Bu i�
 İşlem bittikten sonra clusterımız hazır olacaktır.
 
 # Kunernetes te Jenkins Ayaklandırma 
-Kurulum için için jenkins-deploy dosyasına bakınız 
+Kurulum için için https://github.com/eryalcin/kubernates-jenkins-nexus/blob/43a665524ce710612d1c361e4169be07b0239fb6/setup-Jenkins-on-Kubernetes dosyasına bakınız 
 
 # Kunernetes te Nexus Ayaklandırma 
 Kurulum için için nexus-deploy dosyasına bakınız 
