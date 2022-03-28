@@ -50,15 +50,15 @@ https://topkaya.medium.com/sshla-%C5%9Fifre-girmeden-uzak-ba%C4%9Flant%C4%B1-kur
 
 # Kubespray ile K8s Ortamının Kurulumu
 
-Bu bölüm için https://mydevops353097059.wordpress.com/kubespray-tr/ adresinden kopyalanmıştır.
-
-![image](https://user-images.githubusercontent.com/32457347/160402048-9498ff5b-fd90-453b-ac78-f95f73dbfc3c.png)
+Bu bölüm için https://mydevops353097059.wordpress.com/kubespray-tr/ reposu kopyalanmıştır.
 
 Bu bölümde  kubespray kullanarak 1 master ve 2 node’u olan kubernetes clusterı oluşturacağız. Ben bu çalışmayı kaynak eksikliğinden dolayı VirtualBox üzerinden devam ettiremedim. OpenStack ortamında Ubuntu18.04  sunucularında gerçekleştireceğim.
 
+![image](https://user-images.githubusercontent.com/32457347/160402048-9498ff5b-fd90-453b-ac78-f95f73dbfc3c.png)
+
 # Kubespray Nedir?
 
-Kubespray kendi sunucularımıza veya cloud sunucularına (aws gibi) ansible kullanarak kubernetes clusterı oluşturmamıza yarayan bir tooldur.
+Kubespray kendi sunucularımıza veya cloud sunucularına (AWS, Microsoft Azure, Google Cloud vs.) ansible kullanarak kubernetes clusterı oluşturmamıza yarayan bir tooldur.
 
 Cluster için Gerekli Uygulama Sunucuları
 
@@ -73,12 +73,14 @@ git clone https://github.com/kubernetes-incubator/kubespray.git
 KubeSpray git reposunu sunucumuza indirdik. Daha sonra yapılması gereken klasörün içine girildikten sonra  requirements.txt dosyasındaki modülleri kurmamızdır. Bunları teker teker kurmak yerine pip kullanarak kurulumu gerçekleştireceğiz.
 
 cd kubespray/
+Ubuntu 18.04 bu kurulumu denerken python versiyonuna bağlı olarak ruamel.yaml.clib==0.2.6 ile ilgili hata almıştım.
+/kubespray/requirements.txt içerisinde  ruamel.yaml.clib==0.2.2 olarak güncelledim.
 
 apt-get install python-pip
 
 pip install -r requirements.txt
 
-Komutları çalıştırdıktan sonra kubespray kurulumunu tamamladık. Bu kurulumdan ziyade daha çok kubesprayı hazırlamak gibi düşünebiliriz.
+Komutları çalıştırdıktan sonra kubespray kurulumunu tamamladık. Bu kurulumdan ziyade daha çok kubesprayi hazırlamak gibi düşünebiliriz.
 
 # Kubespray Konfigürasyonu
 
