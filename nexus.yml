@@ -29,7 +29,7 @@ spec:
           runAsUser: 0
         volumeMounts:
           - name: nexus-volume
-            mountPath: "nexus-volume"
+            mountPath: /nexus-data"
       volumes:
       - name: nexus-volume
         persistentVolumeClaim:
