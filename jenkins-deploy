@@ -1,0 +1,166 @@
+#Jenkins'i Kubernetes'e Kurmak
+Kubernetes'in bildirime dayalı bir API'si vardır ve istediğiniz durumu bir YAML veya JSON dosyası kullanarak iletebilirsiniz . Bu eğitimde Jenkins'i dağıtmak için bir YAML dosyası kullanacaksınız. kubectlKomutun küme için yapılandırıldığından emin olun .
+
+İlk olarak, Jenkins ad alanınıkubectl oluşturmak için kullanın :
+
+kubectl create namespace jenkins
+Ardından, Jenkins'i dağıtacak YAML dosyasını oluşturun.
+
+jenkins.yamlKullanarak nanoveya tercih ettiğiniz düzenleyiciyi kullanarak adlı yeni bir dosya oluşturun ve açın :
+
+nano jenkins.yaml
+Şimdi Jenkins görüntüsünü, bağlantı noktasını ve birkaç yapılandırmayı daha tanımlamak için aşağıdaki kodu ekleyin:
+
+jenkins.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: jenkins
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: jenkins
+  template:
+    metadata:
+      labels:
+        app: jenkins
+    spec:
+      containers:
+      - name: jenkins
+        image: jenkins/jenkins:lts
+        ports:
+          - name: http-port
+            containerPort: 8080
+          - name: jnlp-port
+            containerPort: 50000
+        volumeMounts:
+          - name: jenkins-vol
+            mountPath: /var/jenkins_vol
+      volumes:
+        - name: jenkins-vol
+          emptyDir: {}
+Bu YAML dosyası , Jenkins LTS görüntüsünü kullanarak bir dağıtım oluşturur ve ayrıca bağlantı noktasını ve . Jenkins'e erişmek ve sırasıyla Jenkins çalışanlarından gelen bağlantıları kabul etmek için bu bağlantı noktalarını kullanırsınız.808050000
+
+Şimdi bu dağıtımı jenkinsad alanında oluşturun:
+
+kubectl create -f jenkins.yaml --namespace jenkins
+Jenkins görüntüsünü çekmesi ve Jenkins bölmesini çalıştırması için kümeye birkaç dakika verin.
+
+kubectlBölmenin durumunu doğrulamak için kullanın :
+
+kubectl get pods -n jenkins
+Bunun gibi bir çıktı alacaksınız:
+
+NAME                       READY   STATUS    RESTARTS   AGE
+jenkins-6fb994cfc5-twnvn   1/1     Running   0          95s
+Pod adının ortamınızda farklı olacağını unutmayın.
+
+Bölme çalıştığında, onu bir Service kullanarak açığa çıkarmanız gerekir . Bu öğretici için NodePort Hizmet türünü kullanacaksınız . Ayrıca, çalışanların Jenkins'e bağlanması için bir ClusterIP tipi hizmet oluşturacaksınız.
+
+Adlı yeni bir dosya oluşturun ve açın jenkins-service.yaml:
+
+nano jenkins-service.yaml
+NodePort Hizmetini tanımlamak için aşağıdaki kodu ekleyin:
+
+jenkins-service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: jenkins-service
+spec:
+  type: NodePort
+  ports:
+    - port: 8080
+      targetPort: 8080
+      nodePort: 30000
+  selector:
+    app: jenkins
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: jenkins-jnlp
+spec:
+  type: ClusterIP
+  ports:
+    - port: 50000
+      targetPort: 50000
+  selector:
+    app: jenkins
+    
+Yukarıdaki YAML dosyasında, NodePort Hizmetinizi tanımlarsınız ve ardından 8080Jenkins bölmesinin portunu port olarak gösterirsiniz 30000.
+
+Şimdi Hizmeti aynı ad alanında oluşturun:
+
+kubectl create -f jenkins-service.yaml --namespace jenkins
+Hizmetin çalıştığını kontrol edin:
+
+kubectl get services --namespace jenkins-dev
+Bunun gibi bir çıktı alacaksınız:
+
+Output
+NAME      TYPE       CLUSTER-IP      EXTERNAL-IP   PORT(S)          AGE
+jenkins   NodePort   your_cluster_ip   <none>        8080:30000/TCP   15d
+NodePort ve Jenkins çalışır durumdayken, Jenkins kullanıcı arayüzüne erişmeye ve onu keşfetmeye başlamaya hazırsınız.
+
+Adım 2 — Jenkins Kullanıcı Arayüzüne Erişim
+Bu adımda, Jenkins kullanıcı arayüzüne erişecek ve keşfedeceksiniz. NodePort hizmetinize, 30000küme düğümleri arasındaki bağlantı noktasından erişilebilir. Jenkins kullanıcı arayüzüne erişmek için bir düğüm IP'si almanız gerekir.
+
+kubectlDüğüm IP'lerinizi almak için kullanın :
+
+kubectl get nodes -o wide
+kubectlharici IP'lerinizle bir çıktı üretecek:
+
+Output
+NAME        STATUS   ROLES    AGE   VERSION    INTERNAL-IP        EXTERNAL-IP        OS-IMAGE                       KERNEL-VERSION          CONTAINER-RUNTIME
+your_node   Ready    <none>   16d   v1.18.8   your_internal_ip   your_external_ip   Debian GNU/Linux 10 (buster)   4.19.0-10-cloud-amd64   docker://18.9.9
+your_node   Ready    <none>   16d   v1.18.8   your_internal_ip   your_external_ip   Debian GNU/Linux 10 (buster)   4.19.0-10-cloud-amd64   docker://18.9.9
+your_node   Ready    <none>   16d   v1.18.8   your_internal_ip   your_external_ip   Debian GNU/Linux 10 (buster)   4.19.0-10-cloud-amd64   docker://18.9.9
+your_external_ipDeğerlerden birini kopyalayın .
+
+Şimdi bir web tarayıcısı açın ve öğesine gidin .http://your_external_ip:30000
+
+Yönetici parolası ve bu parolanın Jenkins Pod günlüklerinden alınmasıyla ilgili talimatlar isteyen bir sayfa görünecektir.
+
+kubectlBu günlüklerden şifreyi çekmek için kullanalım .
+
+İlk önce terminalinize dönün ve Pod adınızı alın:
+
+kubectl get pods -n jenkins
+
+Bunun gibi bir çıktı alacaksınız:
+
+NAME                       READY   STATUS    RESTARTS   AGE
+jenkins-6fb994cfc5-twnvn   1/1     Running   0          9m54s
+Ardından, yönetici parolası için Pod'un günlüklerini kontrol edin. Vurgulanan bölümü bölme adınızla değiştirin:
+
+kubectl logs jenkins-6fb994cfc5-twnvn -n jenkins
+Parolayı bulmak için yukarı veya aşağı kaydırmanız gerekebilir:
+
+Running from: /usr/share/jenkins/jenkins.war
+webroot: EnvVars.masterEnvVars.get("JENKINS_HOME")
+. . .
+
+Jenkins initial setup is required. An admin user has been created and a password generated.
+Please use the following password to proceed to installation:
+
+your_jenkins_password
+
+This may also be found at: /var/jenkins_home/secrets/initialAdminPassword
+. . .
+kopyala your_jenkins_password. Şimdi tarayıcınıza dönün ve Jenkins kullanıcı arayüzüne yapıştırın.
+
+Şifreyi girdikten sonra Jenkins, eklentileri yüklemenizi isteyecektir. Olağandışı bir şey yapmadığınız için Önerilen eklentileri yükle 'yi seçin .
+
+Kurulumdan sonra Jenkins yeni bir sayfa yükleyecek ve sizden bir yönetici kullanıcı oluşturmanızı isteyecektir. Alanları doldurun veya atla ve yönetici olarak devam et bağlantısına basarak bu adımı atlayın. Bu, kullanıcı adınızı admin ve şifrenizi olarak bırakacaktır your_jenkins_password.
+
+Örnek yapılandırmasını soran başka bir ekran görünecektir. Şimdi değil bağlantısını tıklayın ve devam edin.
+
+Bundan sonra, Jenkins seçimlerinizin bir özetini oluşturacak ve Jenkins hazır! Jenkins'i kullanmaya başla'ya tıklayın ve Jenkins ana sayfası görünecektir.
+
+Jenkins kurulumu aşağıdaki linkten takip edebilirsiniz.
+
+https://medium.com/devopsturkiye/jenkins-kurulumu-e8233ab0da42
