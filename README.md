@@ -19,16 +19,14 @@ Ansible 2.10.15
 Kubernetes v1.23.5 versiyonları ile test edilmiştir.
 
 
-#
-1-Vagrant Kurulumu ve VirtualBox Entegresi
+# 1-Vagrant Kurulumu ve VirtualBox Entegresi
 
 Vagrant(https://www.vagrantup.com/) toolunu sanallaştırma ortamımızda kubernates ortamını konuşlandıracağımız VM leri hazırlamak için kullanacağız.
 
 Bu projede sanallaştırma altyapısı için Vindows10 üzerinde VirtualBox tercih edilmiştir. 
 https://ugurakgul.medium.com/creating-a-local-kubernetes-cluster-with-vagrant-ba591ab70ee2 linkinden kurulumu yukarıdaki VirtualBox ve Vagrant versiyonları için değiştirip kendi ortamınıza kurulumu sağlayabilirsiniz.
 
-#
-Ansible Kurulumu
+# Ansible Kurulumu
 
 Ben bu çalışmayı kaynak eksikliğinden dolayı VirtualBox üzerinden devam ettiremedim. OpenStack ortamında Ubuntu18.04  sunucularında gerçekleştireceğim.
 Master node olacak VM'e ansible 2.10.15 kurulumu yapıyoruz.
@@ -45,15 +43,13 @@ Ansible ile ilgili kurulumları devam ettirmek için ansible sunucusundan diğer
 
 https://topkaya.medium.com/sshla-%C5%9Fifre-girmeden-uzak-ba%C4%9Flant%C4%B1-kurmak-e8f4d28a01a3 Linkinden bu ayarlamayı takip edebilirsiniz.
 
-#
-Kubespray ile K8s Ortamının Kurulumu
+# Kubespray ile K8s Ortamının Kurulumu
 
 Bu bölüm için https://mydevops353097059.wordpress.com/kubespray-tr/ adresinden kopyalanmıştır.
 
 Bu bölümde  kubespray kullanarak 1 master ve 2 node’u olan kubernetes clusterı oluşturacağız. Ben bu çalışmayı kaynak eksikliğinden dolayı VirtualBox üzerinden devam ettiremedim. OpenStack ortamında Ubuntu18.04  sunucularında gerçekleştireceğim.
 
-#
-Kubespray Nedir?
+# Kubespray Nedir?
 
 Kubespray kendi sunucularımıza veya cloud sunucularına (aws gibi) ansible kullanarak kubernetes clusterı oluşturmamıza yarayan bir tooldur.
 
@@ -61,8 +57,7 @@ Cluster için Gerekli Uygulama Sunucuları
 
 3 adet 18.04(4vCPU-8GB_Ram-80GB_Disk) sunucusu (1 master+node 2 node)
 
-#
-Kubespray Kurulumu
+# Kubespray Kurulumu
 
 master sunucusuna kubespray kurmak için aşağıdaki komutu çalıştırmanız yeterli olacaktır.
 
@@ -78,8 +73,7 @@ pip install -r requirements.txt
 
 Komutları çalıştırdıktan sonra kubespray kurulumunu tamamladık. Bu kurulumdan ziyade daha çok kubesprayı hazırlamak gibi düşünebiliriz.
 
-#
-Kubespray Konfigürasyonu
+# Kubespray Konfigürasyonu
 
 Kubesprayi hazırladıktan sonra geriye kubesprayi çalıştırmak kalıyor. Çalıştırmadan önce bir kaç tane düzenleme yapmamız gerekecek.
 
