@@ -1,0 +1,102 @@
+#Kubernetes Nexus Kurulumu
+
+Bu kılavuzda kullanılan tüm Kubernetes bildirimleri bir Github deposunda barındırılmaktadır. Doğrudan yürütmek için depoyu yerel iş istasyonunuza klonlayın.
+
+git clone https://github.com/bibinwilson/kubernetes-nexus.git
+
+Kubernetes'te Nexus OSS Kurulumu
+
+Kubernetes'te nexus kurmaya başlayalım.
+
+Adım 1: nexus-dev adlı bir ad alanı oluşturun.
+
+kubectl create namespace nexus-dev
+
+Adım 2:   Bir nexus.yaml dosya oluşturun. nexus 2.x ve 3.x için farklıdır. 3.x kurulumu yaoacağız. 
+
+Nexus 3.x için Dağıtım YAML:  Aşağıdaki dağıtım Sonatype nexus 3 içindir. Ayrıca nexus verileri için ana bilgisayar veri hacmine sahiptir.
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nexus
+  namespace: devops-tools
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nexus-server
+  template:
+    metadata:
+      labels:
+        app: nexus-server
+    spec:
+      containers:
+        - name: nexus
+          image: sonatype/nexus3:latest
+          resources:
+            limits:
+              memory: "4Gi"
+              cpu: "1000m"
+            requests:
+              memory: "2Gi"
+              cpu: "500m"
+          ports:
+            - containerPort: 8081
+          volumeMounts:
+            - name: nexus-data
+              mountPath: /nexus-data
+      volumes:
+        - name: nexus-data
+          emptyDir: {}
+          
+Adım 3: kubectl komutunu kullanarak dağıtımı oluşturun.
+
+kubectl create -f deployment.yaml
+
+Dağıtım bölmesi durumunu kontrol edin
+
+kubectl get po -n nexus-dev
+
+Adım 4:service.yaml  
+
+NodePort kullanarak nexus uç noktasını ortaya çıkarmak için aşağıdaki içeriğe sahip bir dosya oluşturun .
+
+Not: Bir bulut üzerindeyseniz, Loadbalancer hizmet türünü kullanarak bir yük dengeleyici kullanarak hizmeti kullanıma sunabilirsiniz. Ayrıca, Prometheus ek açıklamaları, Prometheus tarafından hizmet uç noktasının izlenmesine yardımcı olacaktır.
+
+piVersion: v1
+kind: Service
+metadata:
+  name: nexus-service
+  namespace: devops-tools
+  annotations:
+      prometheus.io/scrape: 'true'
+      prometheus.io/path:   /
+      prometheus.io/port:   '8081'
+spec:
+  selector: 
+    app: nexus-server
+  type: NodePort  
+  ports:
+    - port: 8081
+      targetPort: 8081
+      nodePort: 31000
+      
+Kubectl kullanarak hizmet yapılandırmasını kontrol edin.
+
+Kkubectl describe service nexus-service -n nexus-dev
+
+Adım 5:  Artık, düğüm bağlantı noktasını açığa çıkardığımız için bağlantı noktasındaki herhangi bir Kubernetes düğüm IP'sindeki nexus'a erişebileceksiniz 31000. Örneğin,
+
+Nexus 3 için,
+
+http://35.144.130.153:32000
+nexus 3 için varsayılan kullanıcı adı admin'dir ve varsayılan parola bölmenin içinde saklanır.
+
+Önce bölmeleri listeleyin ve nexus bölmesi adını alın.
+
+kubectl get pods -n nexus-dev
+
+Konumda saklanan parolayı almak için aşağıda gösterildiği gibi kubectl komutunu kullanın /nexus-data/admin.password. nexus-55976bf6fd-cvhxb Pod adınızla değiştirin .
+
+kubectl exec nexus-55976bf6fd-cvhxb -n devops-tools cat /nexus-data/admin.password
